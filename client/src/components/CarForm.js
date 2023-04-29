@@ -2183,19 +2183,19 @@ function Form(props) {
 
     const apiUrl =
       // "https://32ba-2409-40c0-7a-b031-d069-143e-694e-9ffe.ngrok-free.app";
-//      "https://32ba-2409-40c0-7a-b031-d069-143e-694e-9ffe.ngrok-free.app";
+      //      "https://32ba-2409-40c0-7a-b031-d069-143e-694e-9ffe.ngrok-free.app";
       "http://localhost:5000";
-     const endpoint = "/calculate_co2";
-//    const endpoint = "/createNotif";
+    const endpoint = "/calculate_co2";
+    //    const endpoint = "/createNotif";
 
     const payload = {
-      make: form.brand,
-      model: form.model,
-      vehicle_class: form.v_class,
+      make: make.indexOf(form.brand),
+      model: model.indexOf(form.model),
+      vehicle_class: vehicle_class.indexOf(form.v_class),
       engine_size: form.engine_size_l,
-      cylinders: form.cylinders,
-      transmission: form.transmission_type,
-      fuel: form.fuel,
+      cylinders: cyl.indexOf(form.cylinders),
+      transmission: type.indexOf(form.transmission_type),
+      fuel: fuel.indexOf(form.fuel),
       mileage: form.mileage,
     };
 

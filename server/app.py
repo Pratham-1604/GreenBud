@@ -154,7 +154,7 @@ def calculate_co2():
                 mileage,
                 mileage,
                 mileage,
-                235.215/mileage,
+                235.215/float(mileage)
             )
         ],
         columns=[
