@@ -122,43 +122,43 @@ def fuel():
 @app.route("/calculate_co2", methods=["POST"])
 def calculate_co2():
     # Get the form inputs
-    car_id = request.form["car_id"]
-    manufacturer = request.form["manufacturer"]
+    make = request.form["make"]
     model = request.form["model"]
-    description = request.form["description"]
+    vehicle_class = request.form["vehicle_class"]
+    engine_size = request.form["engine_size"]
+    cylinders = request.form["cylinders"]
     transmission = request.form["transmission"]
-    transmission_type = request.form["transmission_type"]
-    engine_size_cm3 = request.form["engine_size_cm3"]
     fuel = request.form["fuel"]
-    powertrain = request.form["powertrain"]
-    power_ps = request.form["power_ps"]
+    mileage = request.form["mileage"]
 
     data = pd.DataFrame(
         [
             (
-                car_id,
-                manufacturer,
+                make,
                 model,
-                description,
+                vehicle_class,
+                engine_size,
+                cylinders,
                 transmission,
-                transmission_type,
-                engine_size_cm3,
                 fuel,
-                powertrain,
-                power_ps,
+                mileage,
+                mileage,
+                mileage,
+                235.215/mileage,
             )
         ],
         columns=[
-            "car_id",
-            "manufacturer",
-            "model",
-            "description",
-            "transmission",
-            "transmission_type",
-            "engine_size_cm3",
-            "fuel",
-            "powertrain",
-            "power_ps",
+            "Make",
+            "Model",
+            "Vehicle Class",
+            "Engine Size(L)",
+            "Cylinders",
+            "Transmission",
+            "Fuel Type",
+            "Fuel Consumption City (L/100km)",
+            "Fuel Consumption Hwy (L/100km)",
+            "Fuel Consumption Comb (L/100km)",
+            "Fuel Consumption Comb (mpg)",
         ],
     )
     print(data.head())
