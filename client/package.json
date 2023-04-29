@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
+  "proxy" : "https://32ba-2409-40c0-7a-b031-d069-143e-694e-9ffe.ngrok-free.app",
   "private": true,
   "dependencies": {
     "@headlessui/react": "^1.7.14",

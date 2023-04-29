@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const make = [
   "ACURA",
@@ -2180,23 +2181,32 @@ function Form(props) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const formValues = Object.values(form);
-    const isFormValid = formValues.every((value) => typeof value === ("string" || "number"));
-    if (isFormValid) {
-      console.log(make.indexOf(form.brand));
-      console.log(model.indexOf(form.model));
-      console.log(vehicle_class.indexOf(form.v_class));
-      console.log(form.engine_size_l);
-      console.log(cyl.indexOf(form.cylinders));
-      console.log(type.indexOf(form.transmission_type));
-      console.log(fuel.indexOf(form.fuel));
-      console.log(form.mileage);
-      toast.success("Ready to go!");
+    const apiUrl =
+      "https://32ba-2409-40c0-7a-b031-d069-143e-694e-9ffe.ngrok-free.app";
+    const endpoint = "/calculate_co2";
 
-      props.onClick();
-    } else {
-      toast.error("Fill the Form");
-    }
+    const payload = {
+      make: form.brand,
+      model: form.model,
+      vehicle_class: form.v_class,
+      engine_size: form.engine_size_l,
+      cylinders: form.cylinders,
+      transmission: form.transmission_type,
+      fuel: form.fuel,
+      mileage: form.mileage,
+    };
+
+    axios
+      .post(apiUrl + endpoint, payload)
+
+      .then((response) => {
+        // Handle success response
+        console.log(response.data);
+      })
+      .catch((error) => {
+        // Handle error
+        console.error(error);
+      });
   };
 
   return (
