@@ -51,7 +51,7 @@ const options = {
 };
 
 const LineGraph = () => (
-  <div className="h-full w-2/3 p-4">
+  <div className="h-full shadow-2xl w-2/3 p-4">
     <Line data={data} options={options} height={null} />
   </div>
 );

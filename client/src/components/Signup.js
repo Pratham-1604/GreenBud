@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const Signup = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     name: "",
@@ -18,17 +18,19 @@ const Signup = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    toast.success("Hello User");
+
+    navigate('/me')
+    toast.success("Hello Buddy");
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-between bkgrd">
-      <h1 className="text-center text-white text-3xl bg-gray-800 py-2 w-full">
+    <div className="h-screen flex flex-col items-center justify-between bg-gradient-to-t from-white to-green-300">
+      <h1 className="text-center text-white text-3xl bg-[#038373] py-2 w-full">
         SignUp
       </h1>
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-1/3"
+        className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4 w-1/3"
       >
         <div className="mb-4">
           <label className="block text-gray-700 font-bold mb-1" htmlFor="name">
@@ -74,8 +76,9 @@ const Signup = () => {
         </div>
         <div className="flex items-center justify-between">
           <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="button"
             type="submit"
+            onClick={handleSubmit}
           >
             Submit
           </button>

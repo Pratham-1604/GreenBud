@@ -10,6 +10,7 @@ import { Route, Routes } from "react-router-dom";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Map from "./components/GoogleMap";
+import PUC from "./components/PUC";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/buddies" element={<Buddies />} />
         <Route path="/notify" element={<Notify />} />
         <Route path="/googlemap" element={<Map />} />
+        <Route path="/puc" element={<PUC />} />
       </Routes>
 
       <ToastContainer />
