@@ -11,7 +11,7 @@ from datetime import datetime
 from schema import User
 import os
 from dotenv import load_dotenv
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 load_dotenv()
 
@@ -35,8 +35,12 @@ users_collection = db["users"]
 notif_collection = db['notifications']
 
 app = Flask(__name__)
-cors = CORS(app)
+cors = CORS(app,  resources={
+    r"/*": {"origins": "http://localhost:3000"},
+    r"/api/": {"origins": "", "methods": ["GET", "POST"], "allow_headers": ["Content-Type"]}
+})
 
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/")
 def index():
@@ -122,9 +126,16 @@ def fuel():
 
 
 @app.route("/calculate_co2", methods=["POST"])
+@cross_origin()
 def calculate_co2():
     # Get the form inputs
     data = request.get_json()
+    print("data")
+    print(data)
+
+    print("request")
+    print(request)
+
     make = data["make"]
     model = data["model"]
     vehicle_class = data["vehicle_class"]
