@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
-    <header className="flex justify-between items-center p-4 bg-gray-800  text-white">
+    <header className="flex justify-between items-center p-4 bg-[#038373] text-white">
       <div className="flex items-center">
         <img src={logo} alt="Logo" className="h-8 mr-2" />
-        <h1 className="text-xl font-semibold">T-Buddies</h1>
+        <h1 className="text-2xl font-semibold">G-Buddies</h1>
       </div>
       <div>
         <Link to="/login">

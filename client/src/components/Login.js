@@ -20,16 +20,18 @@ const Login = () => {
     event.preventDefault();
     toast.success("Logged In");
 
-    navigate('/me')
+    navigate("/me");
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-between bkgrd">
-      <h1 className="text-center text-white text-3xl bg-gray-800 py-2 w-full">
+    <div className="h-screen flex flex-col items-center justify-between bg-gradient-to-t from-white to-green-300">
+      <h1
+        className="text-center text-white text-3xl bg-[#038373] py-2 w-full"
+      >
         Login
       </h1>
       <form
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-1/3"
+        className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4 w-1/3"
         onSubmit={handleSubmit}
       >
         <div className="mb-4">
@@ -64,18 +66,13 @@ const Login = () => {
           />
         </div>
         <div className="flex items-center justify-between">
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit"
-          >
+          <button className="button" type="submit" onClick={handleSubmit}>
             Sign In
           </button>
         </div>
       </form>
       <Link to="/signup">
-        <button className="text-cente pb-5">
-          Need to sign up?
-        </button>
+        <button className="text-cente pb-5">Need to sign up?</button>
       </Link>
     </div>
   );

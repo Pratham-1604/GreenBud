@@ -2,7 +2,7 @@ import React from "react";
 
 const Details = (props) => {
   return (
-    <div className="flex flex-col w-[400px] h-1/2 items-start border rounded-lg p-6">
+    <div className="flex flex-col w-[400px] h-2/3 justify-around items-start border rounded-lg p-3 bg-[hsl(173,96%,35%)]">
       <div className="flex justify-start w-full">
         <div className="flex-shrink-0">
           <img
@@ -12,19 +12,19 @@ const Details = (props) => {
           />
         </div>
         <div className="ml-6 space-y-4">
-          <h2 className="text-2xl font-medium text-gray-900">R.Vikas</h2>
-          <p className="text-lg font-medium text-gray-500">9167543560</p>
+          <h2 className="text-2xl text-white font-medium">R.Vikas</h2>
+          <p className="text-lg font-medium text-white">9167543560</p>
         </div>
       </div>
       <div className="flex justify-around w-full mt-4">
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="button"
           onClick={props.onDetails}
         >
           Vehicle Details
         </button>
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="button"
           onClick={props.onPool}
         >
           Pool Ride

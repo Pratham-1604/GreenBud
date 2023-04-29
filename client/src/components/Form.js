@@ -24,7 +24,7 @@ function Form(props) {
   };
 
   return (
-    <div className="bg-white rounded-md shadow-md p-6 w-1/2 absolute z-50 left-1/4 right-1/4 mt-10">
+    <div className="bg-gradient-to-t from-green-100 to-white rounded-md shadow-md p-6 w-1/2 absolute z-50 left-1/4 right-1/4 mt-10">
       <h2 className="text-lg font-medium mb-4">Enter Travelling Details</h2>
       <form>
         <div className="mb-4">
@@ -78,14 +78,14 @@ function Form(props) {
         <div className="flex justify-between">
           <Link to="/buddies">
             <p
-              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+              className="button"
             >Find Your Buddies </p>
           </Link>
           <div>
             <button
               onClick={handleSubmit}
               type="submit"
-              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+              className="button"
             >
               Submit
             </button>

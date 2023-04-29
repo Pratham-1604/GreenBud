@@ -4,10 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { BellIcon } from "@heroicons/react/outline";
 
 const Navbar = () => {
-  // const navigate = useNavigate();
 
   return (
-    <header className="bg-gray-800 rounded-b-xl shadow-md">
+    <header className="bg-[#038373] rounded-b-xl shadow-md">
       <div className="w-full px-4 sm:px-6 lg:px-4">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
@@ -17,7 +16,7 @@ const Navbar = () => {
               alt="Logo"
             />
             <span className="ml-2 text-xl text-white font-semibold">
-              T-Buddies
+              G-Buddies
             </span>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
@@ -114,7 +113,7 @@ const Navbar = () => {
             </Menu>
             <Link to="/notify">
               <button className="ml-2 relative">
-                <BellIcon className="w-6 h-6 text-gray-400" />
+                <BellIcon className="w-6 h-6 text-white" />
                 <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs font-bold bg-red-500 text-white -mt-1 -mr-1">
                   5
                 </span>
