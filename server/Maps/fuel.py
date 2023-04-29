@@ -1,8 +1,13 @@
 import googlemaps
 import math
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Define the API key, client and travel mode
-API_KEY = "AIzaSyDYKrqo4uZx9j0S9D0PeH8fBxarOTswUNg"
+API_KEY = os.getenv("API_KEY")
 gmaps = googlemaps.Client(key=API_KEY)
 mode = "driving"
 

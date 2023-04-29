@@ -122,14 +122,15 @@ def fuel():
 @app.route("/calculate_co2", methods=["POST"])
 def calculate_co2():
     # Get the form inputs
-    make = request.form["make"]
-    model = request.form["model"]
-    vehicle_class = request.form["vehicle_class"]
-    engine_size = request.form["engine_size"]
-    cylinders = request.form["cylinders"]
-    transmission = request.form["transmission"]
-    fuel = request.form["fuel"]
-    mileage = request.form["mileage"]
+    data = request.get_json()
+    make = data["make"]
+    model = data["model"]
+    vehicle_class = data["vehicle_class"]
+    engine_size = data["engine_size"]
+    cylinders = data["cylinders"]
+    transmission = data["transmission"]
+    fuel = data["fuel"]
+    mileage = data["mileage"]
 
     data = pd.DataFrame(
         [
@@ -155,53 +156,19 @@ def calculate_co2():
             "Cylinders",
             "Transmission",
             "Fuel Type",
-            "Fuel Consumption City (L/100km)",
-            "Fuel Consumption Hwy (L/100km)",
-            "Fuel Consumption Comb (L/100km)",
+            "Fuel Consumption City (L/100 km)",
+            "Fuel Consumption Hwy (L/100 km)",
+            "Fuel Consumption Comb (L/100 km)",
             "Fuel Consumption Comb (mpg)",
         ],
     )
     print(data.head())
-
-    # Here are the categorical features we are going to create one-hot encoded features for
-    categorical_features = [
-        "manufacturer",
-        "model",
-        "description",
-        "transmission",
-        "transmission_type",
-        "fuel",
-        "powertrain",
-    ]
-
-    # Concatenate the input data with the missing columns
-    encoder = preprocessing.OneHotEncoder(handle_unknown="ignore")
-    one_hot_features = encoder.fit_transform(data[categorical_features])
-    one_hot_names = encoder.get_feature_names_out()
-    num_new_columns = 3521 - len(
-        one_hot_names
-    )  # Change this to the number of new columns you want to add
-    null_columns = np.zeros((one_hot_features.shape[0], num_new_columns))
-
-    # Convert the null columns to a CSR matrix
-    null_columns_csr = scipy.sparse.csr_matrix(null_columns)
-    numerical_feature_names = ["engine_size_cm3", "power_ps"]
-    one_hot_features = scipy.sparse.hstack((one_hot_features, null_columns_csr))
-    numerical_features = data[numerical_feature_names]
-
-    scaler = preprocessing.MinMaxScaler()
-    numerical_features = scaler.fit_transform(
-        numerical_features
-    )  # Need to scale numerical features for ridge regression
-
-    # Combine numerical features with one-hot-encoded features
-    features = scipy.sparse.hstack((numerical_features, one_hot_features), format="csr")
-    model = joblib.load(
-        "C:/Hackathons/SE Hackathon/trial_web/model/ridge_fit_full.joblib"
-    )
-    prediction = model.predict(features)
-    response = {"emission (gram per KM)": prediction[0]}
-    # Return the result
+    import joblib
+    RF = joblib.load("C:/Hackathons/SE Hackathon/greenbud/GreenBud/server/model/RF_model.joblib")
+    prediction = RF.predict(data)
+    response = {
+        "emission (g/km)": prediction[0]
+    }
     return jsonify(response)
 
 
