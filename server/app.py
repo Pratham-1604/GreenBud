@@ -11,6 +11,7 @@ from datetime import datetime
 from schema import User
 import os
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 load_dotenv()
 
@@ -34,6 +35,7 @@ users_collection = db["users"]
 notif_collection = db['notifications']
 
 app = Flask(__name__)
+cors = CORS(app)
 
 
 @app.route("/")
