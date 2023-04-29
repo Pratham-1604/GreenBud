@@ -31,6 +31,7 @@ db = client[database_name]
 
 # Get the users collection
 users_collection = db["users"]
+notif_collection = db['notifications']
 
 app = Flask(__name__)
 
@@ -202,6 +203,32 @@ def calculate_co2():
     response = {"emission (gram per KM)": prediction[0]}
     # Return the result
     return jsonify(response)
+
+
+# Notifications
+@app.route('/createNotif', methods=['POST'])
+def create_notif():
+    data = request.json
+    notif_id = notif_collection.insert_one(data).inserted_id
+    return jsonify({'message': 'Notification created successfully!', 'notif_id': str(notif_id)})
+
+@app.route('/getNotif', methods=['GET'])
+def get_notif():
+    notifs = notif_collection.find({})
+    result = []
+    for notif in notifs:
+        notif_data = {}
+        notif_data['sender_id'] = notif['sender_id']
+        notif_data['sender_name'] = notif['sender_name']
+        notif_data['receiver_id'] = notif['receiver_id']
+        notif_data['receiver_name'] = notif['receiver_name']
+        notif_data['message'] = notif['message']
+        notif_data['sender_email'] = notif['sender_email']
+        notif_data['_id'] = str(notif['_id'])
+        result.append(notif_data)
+
+    return jsonify(result)
+
 
 
 if __name__ == "__main__":
