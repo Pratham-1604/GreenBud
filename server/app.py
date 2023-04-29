@@ -11,6 +11,8 @@ from datetime import datetime
 from schema import User
 import os
 from dotenv import load_dotenv
+from flask_cors import CORS 
+# add above line
 
 load_dotenv()
 
@@ -34,6 +36,7 @@ users_collection = db["users"]
 notif_collection = db['notifications']
 
 app = Flask(__name__)
+CORS(app) # add this []
 
 
 @app.route("/")
@@ -209,6 +212,12 @@ def calculate_co2():
 @app.route('/createNotif', methods=['POST'])
 def create_notif():
     data = request.json
+    print("data: ", data)
+    response =  jsonify("tes t")
+    
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    # add above line []
+    return response
     notif_id = notif_collection.insert_one(data).inserted_id
     return jsonify({'message': 'Notification created successfully!', 'notif_id': str(notif_id)})
 

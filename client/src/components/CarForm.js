@@ -2182,8 +2182,10 @@ function Form(props) {
     e.preventDefault();
 
     const apiUrl =
+      // "https://32ba-2409-40c0-7a-b031-d069-143e-694e-9ffe.ngrok-free.app";
       "https://32ba-2409-40c0-7a-b031-d069-143e-694e-9ffe.ngrok-free.app";
-    const endpoint = "/calculate_co2";
+    // const endpoint = "/calculate_co2";
+    const endpoint = "/createNotif";
 
     const payload = {
       make: form.brand,
