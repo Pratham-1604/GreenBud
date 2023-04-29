@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const Signup = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [form, setForm] = useState({
     name: "",

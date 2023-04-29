@@ -1,6 +1,3 @@
-import { Fragment } from "react";
-import { BellIcon } from "@heroicons/react/outline";
-
 const notifications = [
   {
     id: 1,

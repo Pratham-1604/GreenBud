@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const Login = ({state,account}) => {
+const Login = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [category, setCategory] = useState("patient");
 
   const navigate = useNavigate();
 
@@ -17,13 +16,11 @@ const Login = ({state,account}) => {
     setPassword(event.target.value);
   };
 
-  const handleCategoryChange = (event) => {
-    setCategory(event.target.value);
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     toast.success("Logged In");
+
+    navigate('/me')
   };
 
   return (

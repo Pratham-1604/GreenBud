@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { BellIcon } from "@heroicons/react/outline";
 
 const Navbar = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   return (
     <header className="bg-gray-800 rounded-b-xl shadow-md">

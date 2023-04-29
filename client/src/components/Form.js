@@ -24,7 +24,7 @@ function Form(props) {
   };
 
   return (
-    <div className="bg-white rounded-md shadow-md p-6 w-1/2 absolute z-50 left-1/4 right-1/4 top-1/4">
+    <div className="bg-white rounded-md shadow-md p-6 w-1/2 absolute z-50 left-1/4 right-1/4 mt-10">
       <h2 className="text-lg font-medium mb-4">Enter Travelling Details</h2>
       <form>
         <div className="mb-4">

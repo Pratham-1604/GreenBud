@@ -26,7 +26,7 @@ function Profile() {
       {details && <CarForm onClick={onDetails} />}
       <div
         className={`h-screen w-full px-2 flex flex-col justify-center items-center ${
-          pool ? "filter blur-sm" : ""
+          (pool || details) ? "filter blur-sm" : ""
         }`}
       >
         <div className="flex w-full justify-around items-center h-1/2">
