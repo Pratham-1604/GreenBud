@@ -87,11 +87,11 @@ const Map = () => {
   return (
     <div style={{ height: "500px", width: "100%" }}>
       <GoogleMapReact
-        
         bootstrapURLKeys={{ key: "AIzaSyDYKrqo4uZx9j0S9D0PeH8fBxarOTswUNg" }}
         defaultCenter={defaultCenter}
         defaultZoom={14}
-        onClick={handleMapClick}>
+        onClick={handleMapClick}
+      >
         {markers.map((marker, index) => (
           <Marker
             key={index}
@@ -127,7 +127,8 @@ const Marker = ({ onDrag, ...props }) => (
     }}
     {...props}
     draggable={true}
-    onDragEnd={onDrag}>
+    onDragEnd={onDrag}
+  >
     <div style={{ marginTop: "12px" }}>📍</div>
   </div>
 );
@@ -135,7 +136,8 @@ const Polyline = ({ path, options }) => (
   <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
     <GoogleMapReact.OverlayView
       bounds={getBounds(path)}
-      mapPaneName={GoogleMapReact.OVERLAY_MOUSE_TARGET}>
+      mapPaneName={GoogleMapReact.OVERLAY_MOUSE_TARGET}
+    >
       <div>
         <GoogleMapReact.Polyline path={path} options={options} />
       </div>
