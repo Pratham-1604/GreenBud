@@ -2181,8 +2181,12 @@ function Form(props) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const apiUrl = "http://localhost:5000";
-    const endpoint = "/calculate_co2";
+    const apiUrl =
+      // "https://32ba-2409-40c0-7a-b031-d069-143e-694e-9ffe.ngrok-free.app";
+//      "https://32ba-2409-40c0-7a-b031-d069-143e-694e-9ffe.ngrok-free.app";
+      "http://localhost:5000";
+     const endpoint = "/calculate_co2";
+//    const endpoint = "/createNotif";
 
     const payload = {
       make: form.brand,
@@ -2195,32 +2199,9 @@ function Form(props) {
       mileage: form.mileage,
     };
 
-    const base_url = "http://localhost:5000";
-
-    // const testAPI = axios.create({
-    //   base_url,
-    // });
-
-    // testAPI.post(endpoint, payload).then(() => console.log("test print"));
-
-    console.log("here 2");
-    console.log(payload);
-
     axios
-      .post(
-        apiUrl + endpoint,
-        payload,
-        {
-          headers: {
-            Accept: "application/json, text/plain, /",
-            "Content-type": "application/json; charset=UTF-8",
-          },
-        }
+      .post(apiUrl + endpoint, payload)
 
-        // {
-        // headers: { "X-Requested-With": "XMLHttpRequest" },
-        // }
-      )
       .then((response) => {
         // Handle success response
         console.log(response.data);
