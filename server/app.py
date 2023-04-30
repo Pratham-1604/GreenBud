@@ -188,7 +188,8 @@ def calculate_co2():
     )
     print(data.head())
     import joblib
-    RF = joblib.load("C:/Hackathons/SE Hackathon/greenbud/GreenBud/server/model/RF_model.joblib")
+    # RF = joblib.load("C:/Hackathons/SE Hackathon/greenbud/GreenBud/server/model/RF_model.joblib")
+    RF = joblib.load("./model/RF_model.joblib")
     prediction = RF.predict(data)
     response = {
         "emission (g/km)": prediction[0]
