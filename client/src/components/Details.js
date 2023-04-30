@@ -11,9 +11,11 @@ const Details = (props) => {
             alt="Profile picture"
           />
         </div>
-        <div className="ml-6 space-y-4">
+        <div className="ml-6 space-y-3">
           <h2 className="text-2xl text-white font-medium">R.Vikas</h2>
           <p className="text-lg font-medium text-white">9167543560</p>
+          <p className="text-lg font-medium text-white">Carbon Emission Rate</p>
+          <p className="text-md font-medium text-white">{props.rate} gm/km</p>
         </div>
       </div>
       <div className="flex justify-around w-full mt-4">

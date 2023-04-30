@@ -1,11 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 function Ride() {
   const [form, setForm] = useState({
     source: "",
     destination: "",
     mileage: "",
+  });
+
+  const [time, setTime] = useState({
+    distance_time: "",
+    duration_time: "",
+    consumption_time: "",
+    route_time: "",
+  });
+
+  const [fuel, setFuel] = useState({
+    distance_fuel: "",
+    duration_fuel: "",
+    consumption_fuel: "",
+    route_fuel: "",
   });
 
   const handleFormFieldChange = (fieldName, e) => {
@@ -15,7 +30,44 @@ function Ride() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log(form.source, form.destination, form.mileage);
+    const apiUrl =
+      "https://32ba-2409-40c0-7a-b031-d069-143e-694e-9ffe.ngrok-free.app";
+    const endpoint = "/fuel";
+
+    const payload = {
+      origin: form.source,
+      destination: form.destination,
+      mileage: Number(form.mileage),
+    };
+
+    axios
+      .post(apiUrl + endpoint, payload)
+
+      .then((response) => {
+        // Handle success response
+        const {
+          lowest_fuel_consumption_route: lf,
+          lowest_time_taken_route: lt,
+        } = response.data;
+
+        setTime({
+          distance_time: lt.distance,
+          duration_time: lt.duration,
+          consumption_time: lt.fuel_consumption_litres,
+          route_time: lt.summary
+        });
+      
+        setFuel({
+          distance_fuel: lf.distance,
+          duration_fuel: lf.duration,
+          consumption_fuel: lf.fuel_consumption_litres,
+          route_fuel: lf.summary
+        });
+      })
+      .catch((error) => {
+        // Handle error
+        console.error(error);
+      });
 
     setForm({
       source: "",
@@ -64,12 +116,10 @@ function Ride() {
         <div className="w-[45%] bg-[#00CC8E] rounded-lg p-4 shadow-lg">
           <div className="">
             <label htmlFor="route" className="text-white text-xl mb-2">
-              Route
+              Quicker Route
             </label>
             <p id="route" className="text-black">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas
-              minima enim aut, ratione inventore molestias quidem quis et unde
-              illo?
+              {time.route_time}
             </p>
           </div>
 
@@ -82,7 +132,7 @@ function Ride() {
                 Distance
               </label>
               <p id="distance" className="text-black">
-                148 KM
+                {time.distance_time}
               </p>
             </div>
             <div>
@@ -93,7 +143,7 @@ function Ride() {
                 Duration
               </label>
               <p id="duration" className="text-black">
-                3 Hours 21 Mins
+                {time.duration_time}
               </p>
             </div>
           </div>
@@ -106,19 +156,17 @@ function Ride() {
               Fuel Consumption
             </label>
             <p id="fuel" className="text-black">
-              11 Litres
+              {time.consumption_time}
             </p>
           </div>
         </div>
         <div className="w-[45%] bg-[#00CC8E] rounded-lg p-4 shadow-lg">
           <div className="">
             <label htmlFor="route" className="text-white text-xl mb-2">
-              Route
+              Greener Route
             </label>
             <p id="route" className="text-black">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas
-              minima enim aut, ratione inventore molestias quidem quis et unde
-              illo?
+              {fuel.route_fuel}
             </p>
           </div>
 
@@ -131,7 +179,7 @@ function Ride() {
                 Distance
               </label>
               <p id="distance" className="text-black">
-                148 KM
+                {fuel.distance_fuel}
               </p>
             </div>
             <div>
@@ -142,7 +190,7 @@ function Ride() {
                 Duration
               </label>
               <p id="duration" className="text-black">
-                3 Hours 21 Mins
+                {fuel.duration_fuel}
               </p>
             </div>
           </div>
@@ -155,7 +203,7 @@ function Ride() {
               Fuel Consumption
             </label>
             <p id="fuel" className="text-black">
-              11 Litres
+              {fuel.consumption_fuel}
             </p>
           </div>
         </div>
