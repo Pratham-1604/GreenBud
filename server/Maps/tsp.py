@@ -1,108 +1,91 @@
 import googlemaps
-import itertools
-import math
+from itertools import permutations
+import os
 
-# Define the API key, client, and travel mode
-API_KEY = "AIzaSyDYKrqo4uZx9j0S9D0PeH8fBxarOTswUNg"
-gmaps = googlemaps.Client(key=API_KEY)
-mode = "driving"
+from dotenv import load_dotenv
 
-# Define the number of stops and generate a list of stops
-num_stops = int(input("Enter the number of places: "))
-stops = []
-for i in range(num_stops):
-    stop = input("Enter place {}: ".format(i+1))
-    stops.append(stop)
+load_dotenv()
 
-# Get the latitude-longitude coordinates for each stop
-stop_coords = []
-for stop in stops:
-    result = gmaps.geocode(stop)
-    lat_lng = result[0]["geometry"]["location"]
-    stop_coords.append((lat_lng["lat"], lat_lng["lng"]))
+# Define the API key, client and travel mode
+API_KEY = os.getenv("API_KEY")
 
-# Calculate all possible permutations of stops
-permutations = list(itertools.permutations(stop_coords))
+# Create client object for Google Maps API
+gmaps = googlemaps.Client(API_KEY)
 
-# Initialize variables to hold the shortest route, lowest fuel consumption route, and lowest time taken route
-shortest_route = None
-shortest_distance = float("inf")
-lowest_fuel_consumption_route = None
-lowest_fuel_consumption = float("inf")
-lowest_time_route = None
-lowest_time = float("inf")
 
-# Iterate through all possible permutations of stops
-for perm in permutations:
-    # Construct the list of waypoints from the permutation of stops
-    waypoints = []
-    for stop in perm:
-        waypoints.append(stop)
+def calculate_distance(origin, destination):
+    """Calculate distance between two points using Google Maps API."""
+    result = gmaps.distance_matrix(origin, destination, mode="walking")
+    return result["rows"][0]["elements"][0]["distance"]["value"]
 
-    # Request directions from the Google Maps API
-    routes = gmaps.directions(
-        origin=stops[0],
-        destination=stops[-1],
-        mode=mode,
-        waypoints=waypoints[1:-1],
-        optimize_waypoints=True,
-    )
 
-    # Calculate fuel consumption for each route
-    fuel_consumptions = []
-    for route in routes:
-        distance = route["legs"][0]["distance"]["value"] / 1000.0
-        mileage = 14.0  # assuming an average mileage of 14 km/litre
-        driving_time = 0
-        idle_time = 0
-        for step in route["legs"][0]["steps"]:
-            driving_time += step["duration"]["value"]
-            if "traffic_speed_entry" in step:
-                idle_time += (
-                    step["duration"]["value"] - step["duration_in_traffic"]["value"]
-                )
-        print("Distance: ", distance)
-        print("Mileage: ", mileage)
-        print("Idle Time: ", idle_time)
-        print("Driving Time: ", driving_time)
+def solve_tsp(places):
+    """Solve the travelling salesman problem for the given places."""
+    # Generate all possible permutations of the places
+    permutations_list = permutations(places)
 
-        fuel_consumption = (distance / mileage) * (1 + (idle_time / driving_time))
-        fuel_consumptions.append(math.ceil(fuel_consumption))
+    # Set the initial best route to be None and the initial best distance to be infinity
+    best_route = None
+    best_distance = float("inf")
 
-    # Calculate the total distance and time taken for each route
-    total_distance = sum(route["legs"][0]["distance"]["value"] for route in routes)
-    total_time = sum(route["legs"][0]["duration"]["value"] for route in routes)
+    # Loop over all the permutations and calculate their total distance
+    for perm in permutations_list:
+        # Calculate the total distance of this route
+        distance = 0
+        for i in range(len(perm) - 1):
+            distance += calculate_distance(perm[i], perm[i + 1])
 
-    # Check if the current route is the shortest, lowest fuel consumption, or lowest time taken route
-    if total_distance < shortest_distance:
-        shortest_distance = total_distance
-        shortest_route = routes
-        shortest_perm = perm
-    if min(fuel_consumptions) < lowest_fuel_consumption:
-        lowest_fuel_consumption = min(fuel_consumptions)
-        lowest_fuel_consumption_route = routes[fuel_consumptions.index(lowest_fuel_consumption)]
-        lowest_fuel_consumption_perm = perm
-    if total_time < lowest_time:
-        lowest_time = total_time
-        lowest_time_route = routes
-        lowest_time_perm = perm
+        # Check if this route is better than the current best route
+        if distance < best_distance:
+            best_distance = distance
+            best_route = perm
 
-# Print the results
-print("Shortest Route:")
-print(shortest_route[0]["summary"])
-print("Distance:", shortest_route[0]["legs"][0]["distance"]["text"])
-print("Duration:", shortest_route[0]["legs"][0]["duration"]["text"])
-print("Stops:", shortest_perm)
+    # Apply 2-opt algorithm to optimize the route
+    best_route = two_opt(best_route)
 
-print("Lowest Fuel Consumption Route:")
-print(lowest_fuel_consumption_route["summary"])
-print("Distance:", lowest_fuel_consumption_route["legs"][0]["distance"]["text"])
-print("Duration:", lowest_fuel_consumption_route["legs"][0]["duration"]["text"])
-print("Fuel Consumed : ",lowest_fuel_consumption)
-print("Order of stops:", lowest_fuel_consumption_perm)
+    # Return the best route and its distance
+    return best_route, best_distance
 
-print("Lowest Time Route:")
-print(lowest_time_route[0]["summary"])
-print("Distance:", lowest_time_route[0]["legs"][0]["distance"]["text"])
-print("Duration:", lowest_time_route[0]["legs"][0]["duration"]["text"])
-print("Order of stops:", lowest_time_perm)
+
+def two_opt(route):
+    """Apply the 2-opt algorithm to the given route and return the optimized route."""
+    # Make a copy of the route
+    new_route = list(route)
+
+    # Set the initial improvement to be some large value
+    improvement = float("inf")
+
+    # Loop until no further improvement can be made
+    while improvement > 0:
+        improvement = 0
+        for i in range(1, len(new_route) - 2):
+            for j in range(i + 1, len(new_route)):
+                if j - i == 1:
+                    continue
+                # Apply 2-opt move to the route
+                if calculate_distance(new_route[i - 1], new_route[j - 1]) + calculate_distance(
+                    new_route[i], new_route[j]
+                ) < calculate_distance(new_route[i - 1], new_route[i]) + calculate_distance(
+                    new_route[j - 1], new_route[j]
+                ):
+                    new_route[i:j] = list(reversed(new_route[i:j]))
+                    improvement += 1
+        route = new_route
+
+    # Return the optimized route
+    return new_route
+
+
+def print_route(route):
+    """Print the given route with the total distance."""
+    print(" -> ".join(route))
+    distance = 0
+    for i in range(len(route) - 1):
+        distance += calculate_distance(route[i], route[i + 1])
+    print("Total Distance: {} kilometers".format(distance/1000))
+
+
+if __name__ == "__main__":
+    places = ["Kalyan", "Dadar", "Thane", "Andheri", "Pune"]
+    route, distance = solve_tsp(places)
+    print_route(route)
