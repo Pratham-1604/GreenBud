@@ -9,6 +9,7 @@ import googlemaps
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 from schema import User
+from Maps.tsp import calculate_distance, solve_tsp, two_opt, print_route
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS
@@ -108,20 +109,33 @@ def fuel():
     min_time_route = min(
         routes, key=lambda route: route["legs"][0]["duration"]["value"]
     )
+    distance = min_time_route["legs"][0]["distance"]["value"] / 1000.0
+    mileage = mileage  # assuming an average mileage of 14 km/litre
+    driving_time = 0
+    idle_time = 0
+    for step in min_time_route["legs"][0]["steps"]:
+        driving_time += step["duration"]["value"]
+        if "traffic_speed_entry" in step:
+            idle_time += (
+                step["duration"]["value"] - step["duration_in_traffic"]["value"]
+            )
+        fuel_consumption_min_time = (distance / mileage) * (1 + (idle_time / driving_time))
 
     response = {
-        "route_with_lowest_fuel_consumption": min_fuel_consumption_route["summary"],
-        "distance_fuel": min_fuel_consumption_route["legs"][0]["distance"]["text"],
-        "duration_fuel": min_fuel_consumption_route["legs"][0]["duration"]["text"],
-        "fuel_consumption_litres": min_fuel_consumption,
-        "route_with_lowest_time_taken": min_time_route["summary"],
-        "distance_time": min_time_route["legs"][0]["distance"]["text"],
-        "duration_time": min_time_route["legs"][0]["duration"]["text"],
+        "lowest_fuel_consumption_route": {
+            "summary": min_fuel_consumption_route["summary"],
+            "distance": min_fuel_consumption_route["legs"][0]["distance"]["text"],
+            "duration": min_fuel_consumption_route["legs"][0]["duration"]["text"],
+            "fuel_consumption_litres": min_fuel_consumption,
+        },
+        "lowest_time_taken_route": {
+            "summary": min_time_route["summary"],
+            "distance": min_time_route["legs"][0]["distance"]["text"],
+            "duration": min_time_route["legs"][0]["duration"]["text"],
+            "fuel_consumption_litres": math.ceil(fuel_consumption_min_time),
+        }
     }
-
-    # return the dictionary as a JSON response
     return jsonify(response)
-
 
 @app.route("/calculate_co2", methods=["POST"])
 def calculate_co2():
@@ -174,7 +188,8 @@ def calculate_co2():
     )
     print(data.head())
     import joblib
-    RF = joblib.load("C:/Hackathons/SE Hackathon/greenbud/GreenBud/server/model/RF_model.joblib")
+    # RF = joblib.load("C:/Hackathons/SE Hackathon/greenbud/GreenBud/server/model/RF_model.joblib")
+    RF = joblib.load("./model/RF_model.joblib")
     prediction = RF.predict(data)
     response = {
         "emission (g/km)": prediction[0]
@@ -209,7 +224,7 @@ def get_notif():
 @app.route('/pooling', methods = ["POST"])
 def pooling():
     data = request.get_json()
-    user = data
+    user3 = data
     # Sample hardcoded user data
     user1 = {
         "name": "Arshad",
@@ -226,25 +241,17 @@ def pooling():
         "time": datetime(2023, 5, 1, 8, 0, 0),
         "capacity": 2
     }
-
-    user3 = {
-        "name": "Prathamesh",
-        "origin": "Andheri",
-        "destination": "Pune",
-        "time": datetime(2023, 9, 1, 8, 0, 0),
-        "capacity": 4
-    }
-    users = [user1, user2, user3, user]
+   
     # Get directions for each user
+    user3["time"] = datetime.strptime(user3["time"], '%Y-%m-%d %H:%M:%S')
     user1_directions = gmaps.directions(user1["origin"], user1["destination"], mode="driving", departure_time=user1["time"])
     user2_directions = gmaps.directions(user2["origin"], user2["destination"], mode="driving", departure_time=user2["time"])
     user3_directions = gmaps.directions(user3["origin"], user3["destination"], mode="driving", departure_time=user3["time"])
-    user_directions = gmaps.directions(user["origin"], user["destination"], mode="driving", departure_time=user["time"])
+
     # Combine all directions into a single list
     all_directions = [(user1, user1_directions[0]["legs"][0]),
                     (user2, user2_directions[0]["legs"][0]),
-                    (user3, user3_directions[0]["legs"][0]),
-                    (user, user_directions[0]["legs"][0])]
+                    (user3, user3_directions[0]["legs"][0])]
 
     # Sort directions by distance
     all_directions_sorted = sorted(all_directions, key=lambda x: x[1]["distance"]["value"])
@@ -257,19 +264,19 @@ def pooling():
         # Check if this user has already been assigned to a shared ride
         if user not in itertools.chain(*shared_rides):
             # Initialize a new shared ride
-            # print(f"Checking User : {user}")
+            print(f"Checking User : {user}")
             ride = [user]
             route = direction["steps"]
             remaining_capacity = user["capacity"]
             for other_user, other_direction in all_directions_sorted:
                 # Check if this other user can be added to the shared ride
                 if other_user != user and other_user not in itertools.chain(*shared_rides) and remaining_capacity >= 1:
-                    # print(f"Checking Other User : {other_user}")
+                    print(f"Checking Other User : {other_user}")
                     # print((other_direction["duration"]["value"] - direction["duration"]["value"]))
                     other_user_start_time = other_user["time"] + timedelta(seconds=(other_direction["duration"]["value"] - direction["duration"]["value"]))  # Calculate other user's start time at this point
                     # print(other_user_start_time)
                     # print(user["time"] + timedelta(minutes = 10))
-                    if other_user_start_time <= (user["time"] + timedelta(minutes = 10)) and other_user_start_time >= (user["time"] - timedelta(minutes = 10)) :
+                    if other_user_start_time <= (user["time"]+ timedelta(minutes = 10)) and other_user_start_time >= (user["time"] - timedelta(minutes = 10)) :
                         for step in other_direction["steps"]:
                             # Check if this other user's route overlaps with the current shared route
                             if step["start_location"] == route[-1]["end_location"]:
@@ -278,12 +285,12 @@ def pooling():
                         remaining_capacity -= other_user["capacity"]
             # Add the ride to the list of shared rides
             shared_rides.append(ride)
-
+    shared = []
     # Print the shared rides
     if len(shared_rides) > 0:
         print("Shared Rides:")
         for ride in shared_rides:
-            shared = [", ".join([user["name"] for user in ride])]
+            shared.append([user["name"] for user in ride])
         response = {
             "Shared Rides": shared
         }
@@ -291,7 +298,22 @@ def pooling():
     else:
         return -1
     
-
+@app.route('/tsp', methods = ['POST'])
+def tsp():
+    data = request.get_json()
+    places = data['places']
+    print(places)
+    route, distance = solve_tsp(places)
+    print(" -> ".join(route))
+    distance = 0
+    for i in range(len(route) - 1):
+        distance += calculate_distance(route[i], route[i + 1])
+    print("Total Distance: {} kilometers".format(distance/1000))
+    response = {
+        "shortest_route": route,
+        "shortest_distance_kms":distance/1000
+    }
+    return jsonify(response)
 
 if __name__ == "__main__":
     app.run(debug=True)
