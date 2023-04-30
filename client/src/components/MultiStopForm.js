@@ -2611,7 +2611,7 @@ function MultiStopForm(props) {
           />
           <datalist id="citiesList" size="5">
             {make.map((cities, index) => (
-              <option key={index} value={car} />
+              <option key={index} value={cities} />
             ))}
           </datalist>
         </div>
