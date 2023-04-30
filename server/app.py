@@ -108,18 +108,32 @@ def fuel():
     min_time_route = min(
         routes, key=lambda route: route["legs"][0]["duration"]["value"]
     )
+    distance = min_time_route["legs"][0]["distance"]["value"] / 1000.0
+    mileage = mileage  # assuming an average mileage of 14 km/litre
+    driving_time = 0
+    idle_time = 0
+    for step in min_time_route["legs"][0]["steps"]:
+        driving_time += step["duration"]["value"]
+        if "traffic_speed_entry" in step:
+            idle_time += (
+                step["duration"]["value"] - step["duration_in_traffic"]["value"]
+            )
+        fuel_consumption_min_time = (distance / mileage) * (1 + (idle_time / driving_time))
 
     response = {
-        "route_with_lowest_fuel_consumption": min_fuel_consumption_route["summary"],
-        "distance_fuel": min_fuel_consumption_route["legs"][0]["distance"]["text"],
-        "duration_fuel": min_fuel_consumption_route["legs"][0]["duration"]["text"],
-        "fuel_consumption_litres": min_fuel_consumption,
-        "route_with_lowest_time_taken": min_time_route["summary"],
-        "distance_time": min_time_route["legs"][0]["distance"]["text"],
-        "duration_time": min_time_route["legs"][0]["duration"]["text"],
+        "lowest_fuel_consumption_route": {
+            "summary": min_fuel_consumption_route["summary"],
+            "distance": min_fuel_consumption_route["legs"][0]["distance"]["text"],
+            "duration": min_fuel_consumption_route["legs"][0]["duration"]["text"],
+            "fuel_consumption_litres": min_fuel_consumption,
+        },
+        "lowest_time_taken_route": {
+            "summary": min_time_route["summary"],
+            "distance": min_time_route["legs"][0]["distance"]["text"],
+            "duration": min_time_route["legs"][0]["duration"]["text"],
+            "fuel_consumption_litres": math.ceil(fuel_consumption_min_time),
+        }
     }
-
-    # return the dictionary as a JSON response
     return jsonify(response)
 
 
@@ -174,7 +188,8 @@ def calculate_co2():
     )
     print(data.head())
     import joblib
-    RF = joblib.load("C:/Hackathons/SE Hackathon/greenbud/GreenBud/server/model/RF_model.joblib")
+    # RF = joblib.load("C:/Hackathons/SE Hackathon/greenbud/GreenBud/server/model/RF_model.joblib")
+    RF = joblib.load("./model/RF_model.joblib")
     prediction = RF.predict(data)
     response = {
         "emission (g/km)": prediction[0]

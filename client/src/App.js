@@ -11,6 +11,7 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Map from "./components/GoogleMap";
 import PUC from "./components/PUC";
+import MultiStopForm from "./components/MultiStopForm";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/notify" element={<Notify />} />
         <Route path="/googlemap" element={<Map />} />
         <Route path="/puc" element={<PUC />} />
+        <Route path="/route-optimization" element={<MultiStopForm />} />
       </Routes>
 
       <ToastContainer />
